@@ -1,0 +1,3 @@
+target/*
+!target/spring-boot-graalvm-native-demo
+!target/spring-boot-graalvm-native-demo.jar

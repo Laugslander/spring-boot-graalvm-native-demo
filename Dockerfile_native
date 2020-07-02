@@ -1,0 +1,15 @@
+# Docker image that compiles the GraalVM native Spring Boot executable
+FROM oracle/graalvm-ce:20.1.0-java11 AS BUILD
+ADD . /build
+WORKDIR /build
+RUN yum install -y unzip zip
+RUN curl -s "https://get.sdkman.io" | bash; \
+    source "$HOME/.sdkman/bin/sdkman-init.sh"; \
+    sdk install maven; \
+    gu install native-image;
+RUN source "$HOME/.sdkman/bin/sdkman-init.sh" && ./compile-native-executable.sh books nl.robinlaugs.books.Main 0.0.1-SNAPSHOT
+
+# Docker image that packages the GraalVM native Spring Boot application
+FROM oraclelinux:7-slim
+COPY --from=BUILD "build/target/native-executable/books" /app
+CMD ["/app"]
